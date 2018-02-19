@@ -26,6 +26,14 @@ export class AppComponent {
   states: any;
   favoriteSeason: string;
 
+  onStateChange(api, condition) {
+    // this.selectedOption = this.options.filter((item)=> item.id == optionid)[0];
+    console.log(api);
+    console.log(condition);
+    this.afs.doc('state/'+api).set({'state': condition});
+  }
+
+
   constructor(private dataService: DataService, private afs: AngularFirestore) {
 
     // Access the Data Service's getUsers() method we defined
@@ -34,6 +42,7 @@ export class AppComponent {
   }
 
   ngOnInit() {
+
     this.statesCol = this.afs.collection('state');
     // this.states = this.statesCol.valueChanges();
     

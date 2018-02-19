@@ -27,7 +27,7 @@ module.exports = ":host {\n    display: -webkit-box;\n    display: -ms-flexbox;\
 /***/ "./src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div fxLayout=\"column\" fxFlex>\n\n    <mat-toolbar color=\"primary\">\n      <mat-toolbar-row>\n        <span>Angular Material</span>\n      </mat-toolbar-row>\n    </mat-toolbar>\n  \n    <mat-sidenav-container fxFlex>\n      <mat-sidenav mode=\"side\" opened>\n        Welcome\n      </mat-sidenav>\n      <div class=\"content\" fxLayout=\"column\" fxLayoutGap=\"20px\">          \n            <mat-card *ngFor=\"let activateState of states | async\">\n                <mat-card-header>\n                  <mat-card-title>{{ activateState?.id }}</mat-card-title>\n                  <!-- <mat-card-subtitle><strong>{{ activateState?.data?.state}}</strong></mat-card-subtitle> -->\n                </mat-card-header>\n                <mat-card-content>\n                  <!-- {{ activateState.apiStates | async | json }} -->\n                    <mat-radio-group class=\"example-radio-group\" [(ngModel)]=\"activateState.data.state\">\n                        <mat-radio-button class=\"example-radio-button\" *ngFor=\"let availableState of activateState.apiStates | async\" [value]=\"availableState.state\">\n                          {{availableState.state}}\n                        </mat-radio-button>\n                      </mat-radio-group>\n                </mat-card-content>\n              </mat-card>\n      </div>\n    </mat-sidenav-container>\n  </div>"
+module.exports = "<div fxLayout=\"column\" fxFlex>\n\n    <mat-toolbar color=\"primary\">\n      <mat-toolbar-row>\n        <span>Angular Material</span>\n      </mat-toolbar-row>\n    </mat-toolbar>\n  \n    <mat-sidenav-container fxFlex>\n      <mat-sidenav mode=\"side\" opened>\n        Welcome\n      </mat-sidenav>\n      <div class=\"content\" fxLayout=\"column\" fxLayoutGap=\"20px\">          \n            <mat-card *ngFor=\"let activateState of states | async\">\n                <mat-card-header>\n                  <mat-card-title>{{ activateState?.id }}</mat-card-title>\n                  <!-- <mat-card-subtitle><strong>{{ activateState?.data?.state}}</strong></mat-card-subtitle> -->\n                </mat-card-header>\n                <mat-card-content>\n                  <!-- {{ activateState.apiStates | async | json }} -->\n                    <mat-radio-group class=\"example-radio-group\" [(ngModel)]=\"activateState.data.state\" (change)=\"onStateChange(activateState?.id, activateState.data.state)\">\n                        <mat-radio-button class=\"example-radio-button\" *ngFor=\"let availableState of activateState.apiStates | async\" [value]=\"availableState.state\">\n                          {{availableState.state}}\n                        </mat-radio-button>\n                      </mat-radio-group>\n                </mat-card-content>\n              </mat-card>\n      </div>\n    </mat-sidenav-container>\n  </div>"
 
 /***/ }),
 
@@ -63,6 +63,12 @@ var AppComponent = /** @class */ (function () {
         this.dataService.getUsers()
             .subscribe(function (res) { return _this.users = res; });
     }
+    AppComponent.prototype.onStateChange = function (api, condition) {
+        // this.selectedOption = this.options.filter((item)=> item.id == optionid)[0];
+        console.log(api);
+        console.log(condition);
+        this.afs.doc('state/' + api).set({ 'state': condition });
+    };
     AppComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.statesCol = this.afs.collection('state');
