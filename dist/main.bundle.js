@@ -56,35 +56,34 @@ __webpack_require__("./node_modules/rxjs/_esm5/add/operator/map.js");
 // }
 var AppComponent = /** @class */ (function () {
     function AppComponent(dataService, afs) {
-        // Access the Data Service's getUsers() method we defined
-        //   this.dataService.getUsers()
-        //       .subscribe(res => this.users = res);
-        // }
         var _this = this;
         this.dataService = dataService;
         this.afs = afs;
-        ngOnInit();
-        {
-            this.statesCol = this.afs.collection('state');
-            // this.states = this.statesCol.valueChanges();
-            this.states = this.statesCol.snapshotChanges()
-                .map(function (actions) {
-                return actions.map(function (a) {
-                    var data = a.payload.doc.data();
-                    var id = a.payload.doc.id;
-                    _this.apiCol = _this.afs.collection(id);
-                    var apiStates = _this.apiCol.snapshotChanges()
-                        .map(function (actions) {
-                        return actions.map(function (a) {
-                            var state = a.payload.doc.id;
-                            return { state: state };
-                        });
-                    });
-                    return { id: id, data: data, apiStates: apiStates };
-                });
-            });
-        }
+        // Access the Data Service's getUsers() method we defined
+        this.dataService.getUsers()
+            .subscribe(function (res) { return _this.users = res; });
     }
+    AppComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.statesCol = this.afs.collection('state');
+        // this.states = this.statesCol.valueChanges();
+        this.states = this.statesCol.snapshotChanges()
+            .map(function (actions) {
+            return actions.map(function (a) {
+                var data = a.payload.doc.data();
+                var id = a.payload.doc.id;
+                _this.apiCol = _this.afs.collection(id);
+                var apiStates = _this.apiCol.snapshotChanges()
+                    .map(function (actions) {
+                    return actions.map(function (a) {
+                        var state = a.payload.doc.id;
+                        return { state: state };
+                    });
+                });
+                return { id: id, data: data, apiStates: apiStates };
+            });
+        });
+    };
     AppComponent = __decorate([
         core_1.Component({
             selector: 'app-root',

@@ -29,9 +29,9 @@ export class AppComponent {
   constructor(private dataService: DataService, private afs: AngularFirestore) {
 
     // Access the Data Service's getUsers() method we defined
-  //   this.dataService.getUsers()
-  //       .subscribe(res => this.users = res);
-  // }
+    this.dataService.getUsers()
+        .subscribe(res => this.users = res);
+  }
 
   ngOnInit() {
     this.statesCol = this.afs.collection('state');
