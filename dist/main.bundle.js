@@ -27,7 +27,7 @@ module.exports = ":host {\n    display: -webkit-box;\n    display: -ms-flexbox;\
 /***/ "./src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div fxLayout=\"column\" fxFlex>\n\n    <mat-toolbar color=\"primary\">\n      <mat-toolbar-row>\n        <span>Angular Material</span>\n      </mat-toolbar-row>\n    </mat-toolbar>\n  \n    <mat-sidenav-container fxFlex>\n      <mat-sidenav mode=\"side\" opened>\n        Welcome\n      </mat-sidenav>\n      <div class=\"content\" fxLayout=\"column\" fxLayoutGap=\"20px\">\n          <mat-card>\n              Test card 1\n            </mat-card>\n          \n            <mat-card>\n              Test card 2\n            </mat-card>\n      </div>\n    </mat-sidenav-container>\n  </div>"
+module.exports = "<div fxLayout=\"column\" fxFlex>\n\n    <mat-toolbar color=\"primary\">\n      <mat-toolbar-row>\n        <span>Angular Material</span>\n      </mat-toolbar-row>\n    </mat-toolbar>\n  \n    <mat-sidenav-container fxFlex>\n      <mat-sidenav mode=\"side\" opened>\n        Welcome\n      </mat-sidenav>\n      <div class=\"content\" fxLayout=\"column\" fxLayoutGap=\"20px\">\n          <mat-card>\n              <ul *ngFor=\"let state of states | async\">\n                  <li>\n                      <strong>{{ state | json}}</strong>\n                      <strong>{{ state.id }}</strong>\n                    <strong>{{ state.state}}</strong>\n                  </li>\n                </ul>\n            </mat-card>\n          \n            <mat-card>\n              Test card 2\n            </mat-card>\n      </div>\n    </mat-sidenav-container>\n  </div>"
 
 /***/ }),
 
@@ -49,21 +49,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
 // Import the DataService
 var data_service_1 = __webpack_require__("./src/app/data.service.ts");
+var firestore_1 = __webpack_require__("./node_modules/angularfire2/firestore/index.js");
+__webpack_require__("./node_modules/rxjs/_esm5/add/operator/map.js");
 var AppComponent = /** @class */ (function () {
-    function AppComponent(_dataService) {
+    function AppComponent(dataService, afs) {
         var _this = this;
-        this._dataService = _dataService;
+        this.dataService = dataService;
+        this.afs = afs;
         // Access the Data Service's getUsers() method we defined
-        this._dataService.getUsers()
+        this.dataService.getUsers()
             .subscribe(function (res) { return _this.users = res; });
     }
+    AppComponent.prototype.ngOnInit = function () {
+        this.statesCol = this.afs.collection('state');
+        this.states = this.statesCol.valueChanges();
+    };
     AppComponent = __decorate([
         core_1.Component({
             selector: 'app-root',
             template: __webpack_require__("./src/app/app.component.html"),
             styles: [__webpack_require__("./src/app/app.component.css")]
         }),
-        __metadata("design:paramtypes", [data_service_1.DataService])
+        __metadata("design:paramtypes", [data_service_1.DataService, firestore_1.AngularFirestore])
     ], AppComponent);
     return AppComponent;
 }());
@@ -91,10 +98,19 @@ var app_component_1 = __webpack_require__("./src/app/app.component.ts");
 var http_1 = __webpack_require__("./node_modules/@angular/common/esm5/http.js");
 var data_service_1 = __webpack_require__("./src/app/data.service.ts");
 var animations_1 = __webpack_require__("./node_modules/@angular/platform-browser/esm5/animations.js");
-// Other imports removed for brevity
 var material_module_1 = __webpack_require__("./src/app/material/material.module.ts");
 var forms_1 = __webpack_require__("./node_modules/@angular/forms/esm5/forms.js");
 var flex_layout_1 = __webpack_require__("./node_modules/@angular/flex-layout/esm5/flex-layout.es5.js");
+var angularfire2_1 = __webpack_require__("./node_modules/angularfire2/index.js");
+var firestore_1 = __webpack_require__("./node_modules/angularfire2/firestore/index.js");
+var firebaseConfig = {
+    apiKey: "AIzaSyCkba3b7b3m8jjYbqm7dGEpyhkmlOq4_ek",
+    authDomain: "firestore-c5f87.firebaseapp.com",
+    databaseURL: "https://firestore-c5f87.firebaseio.com",
+    projectId: "firestore-c5f87",
+    storageBucket: "firestore-c5f87.appspot.com",
+    messagingSenderId: "527097843634"
+};
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
@@ -109,7 +125,9 @@ var AppModule = /** @class */ (function () {
                 animations_1.BrowserAnimationsModule,
                 material_module_1.MaterialModule,
                 forms_1.FormsModule,
-                flex_layout_1.FlexLayoutModule
+                flex_layout_1.FlexLayoutModule,
+                angularfire2_1.AngularFireModule.initializeApp(firebaseConfig),
+                firestore_1.AngularFirestoreModule // And this for firestore
             ],
             providers: [data_service_1.DataService],
             bootstrap: [app_component_1.AppComponent]

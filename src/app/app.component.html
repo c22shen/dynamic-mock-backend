@@ -12,7 +12,13 @@
       </mat-sidenav>
       <div class="content" fxLayout="column" fxLayoutGap="20px">
           <mat-card>
-              Test card 1
+              <ul *ngFor="let state of states | async">
+                  <li>
+                      <strong>{{ state | json}}</strong>
+                      <strong>{{ state.id }}</strong>
+                    <strong>{{ state.state}}</strong>
+                  </li>
+                </ul>
             </mat-card>
           
             <mat-card>
