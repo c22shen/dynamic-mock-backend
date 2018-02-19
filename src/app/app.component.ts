@@ -10,6 +10,10 @@ interface State {
   state: string;
 }
 
+// interface StateId extends State { 
+//   id: string; 
+// }
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -17,18 +21,42 @@ interface State {
 })
 export class AppComponent {
 
+  apiCol: AngularFirestoreCollection<State>;
   statesCol: AngularFirestoreCollection<State>;
-  states: Observable<State[]>;
-  users: Array<any>;
+  states: any;
+  favoriteSeason: string;
+
   constructor(private dataService: DataService, private afs: AngularFirestore) {
 
     // Access the Data Service's getUsers() method we defined
-    this.dataService.getUsers()
-        .subscribe(res => this.users = res);
-  }
+  //   this.dataService.getUsers()
+  //       .subscribe(res => this.users = res);
+  // }
 
   ngOnInit() {
     this.statesCol = this.afs.collection('state');
-    this.states = this.statesCol.valueChanges();
+    // this.states = this.statesCol.valueChanges();
+    
+    this.states = this.statesCol.snapshotChanges()
+    .map(actions => {
+      return actions.map(a => {
+        const data = a.payload.doc.data() as State;
+        const id = a.payload.doc.id;
+        this.apiCol = this.afs.collection(id);
+        const apiStates = this.apiCol.snapshotChanges()
+        .map(actions => {
+          return actions.map(a => {
+            const state = a.payload.doc.id;
+            return { state };
+          })
+        })
+        return { id, data, apiStates };
+      });
+    });
+
+
+
+
+
   }
 }

@@ -20,14 +20,14 @@ webpackEmptyAsyncContext.id = "./src/$$_lazy_route_resource lazy recursive";
 /***/ "./src/app/app.component.css":
 /***/ (function(module, exports) {
 
-module.exports = ":host {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-flex: 1;\n        -ms-flex: 1;\n            flex: 1;\n  }\n  \n  mat-sidenav {\n    width: 320px;\n  }\n  \n  .content {\n    padding: 5em;\n  }"
+module.exports = ":host {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-flex: 1;\n        -ms-flex: 1;\n            flex: 1;\n  }\n  \n  mat-sidenav {\n    width: 320px;\n  }\n  \n  .content {\n    padding: 5em;\n  }\n  \n  .example-radio-group {\n    display: -webkit-inline-box;\n    display: -ms-inline-flexbox;\n    display: inline-flex;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column;\n  }\n  \n  .example-radio-button {\n    margin: 5px;\n  }\n  \n  .example-selected-value {\n    margin: 15px 0;\n  }"
 
 /***/ }),
 
 /***/ "./src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div fxLayout=\"column\" fxFlex>\n\n    <mat-toolbar color=\"primary\">\n      <mat-toolbar-row>\n        <span>Angular Material</span>\n      </mat-toolbar-row>\n    </mat-toolbar>\n  \n    <mat-sidenav-container fxFlex>\n      <mat-sidenav mode=\"side\" opened>\n        Welcome\n      </mat-sidenav>\n      <div class=\"content\" fxLayout=\"column\" fxLayoutGap=\"20px\">\n          <mat-card>\n              <ul *ngFor=\"let state of states | async\">\n                  <li>\n                      <strong>{{ state | json}}</strong>\n                      <strong>{{ state.id }}</strong>\n                    <strong>{{ state.state}}</strong>\n                  </li>\n                </ul>\n            </mat-card>\n          \n            <mat-card>\n              Test card 2\n            </mat-card>\n      </div>\n    </mat-sidenav-container>\n  </div>"
+module.exports = "<div fxLayout=\"column\" fxFlex>\n\n    <mat-toolbar color=\"primary\">\n      <mat-toolbar-row>\n        <span>Angular Material</span>\n      </mat-toolbar-row>\n    </mat-toolbar>\n  \n    <mat-sidenav-container fxFlex>\n      <mat-sidenav mode=\"side\" opened>\n        Welcome\n      </mat-sidenav>\n      <div class=\"content\" fxLayout=\"column\" fxLayoutGap=\"20px\">          \n            <mat-card *ngFor=\"let activateState of states | async\">\n                <mat-card-header>\n                  <mat-card-title>{{ activateState?.id }}</mat-card-title>\n                  <!-- <mat-card-subtitle><strong>{{ activateState?.data?.state}}</strong></mat-card-subtitle> -->\n                </mat-card-header>\n                <mat-card-content>\n                  <!-- {{ activateState.apiStates | async | json }} -->\n                    <mat-radio-group class=\"example-radio-group\" [(ngModel)]=\"activateState.data.state\">\n                        <mat-radio-button class=\"example-radio-button\" *ngFor=\"let availableState of activateState.apiStates | async\" [value]=\"availableState.state\">\n                          {{availableState.state}}\n                        </mat-radio-button>\n                      </mat-radio-group>\n                </mat-card-content>\n              </mat-card>\n      </div>\n    </mat-sidenav-container>\n  </div>"
 
 /***/ }),
 
@@ -51,19 +51,40 @@ var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
 var data_service_1 = __webpack_require__("./src/app/data.service.ts");
 var firestore_1 = __webpack_require__("./node_modules/angularfire2/firestore/index.js");
 __webpack_require__("./node_modules/rxjs/_esm5/add/operator/map.js");
+// interface StateId extends State { 
+//   id: string; 
+// }
 var AppComponent = /** @class */ (function () {
     function AppComponent(dataService, afs) {
+        // Access the Data Service's getUsers() method we defined
+        //   this.dataService.getUsers()
+        //       .subscribe(res => this.users = res);
+        // }
         var _this = this;
         this.dataService = dataService;
         this.afs = afs;
-        // Access the Data Service's getUsers() method we defined
-        this.dataService.getUsers()
-            .subscribe(function (res) { return _this.users = res; });
+        ngOnInit();
+        {
+            this.statesCol = this.afs.collection('state');
+            // this.states = this.statesCol.valueChanges();
+            this.states = this.statesCol.snapshotChanges()
+                .map(function (actions) {
+                return actions.map(function (a) {
+                    var data = a.payload.doc.data();
+                    var id = a.payload.doc.id;
+                    _this.apiCol = _this.afs.collection(id);
+                    var apiStates = _this.apiCol.snapshotChanges()
+                        .map(function (actions) {
+                        return actions.map(function (a) {
+                            var state = a.payload.doc.id;
+                            return { state: state };
+                        });
+                    });
+                    return { id: id, data: data, apiStates: apiStates };
+                });
+            });
+        }
     }
-    AppComponent.prototype.ngOnInit = function () {
-        this.statesCol = this.afs.collection('state');
-        this.states = this.statesCol.valueChanges();
-    };
     AppComponent = __decorate([
         core_1.Component({
             selector: 'app-root',
@@ -213,6 +234,7 @@ var MaterialModule = /** @class */ (function () {
                 material_1.MatProgressSpinnerModule,
                 material_1.MatCardModule,
                 material_1.MatSidenavModule,
+                material_1.MatRadioModule
             ],
             exports: [
                 material_1.MatButtonModule,
@@ -220,7 +242,8 @@ var MaterialModule = /** @class */ (function () {
                 material_1.MatInputModule,
                 material_1.MatProgressSpinnerModule,
                 material_1.MatCardModule,
-                material_1.MatSidenavModule
+                material_1.MatSidenavModule,
+                material_1.MatRadioModule
             ],
             declarations: []
         })

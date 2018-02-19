@@ -6,7 +6,8 @@ import {
   MatInputModule, 
   MatProgressSpinnerModule, 
   MatCardModule,
-  MatSidenavModule
+  MatSidenavModule,
+  MatRadioModule
 } from '@angular/material';
 
 @NgModule({
@@ -18,6 +19,7 @@ import {
     MatProgressSpinnerModule, 
     MatCardModule,
     MatSidenavModule,
+    MatRadioModule
   ],
   exports: [
     MatButtonModule,
@@ -25,7 +27,8 @@ import {
     MatInputModule, 
     MatProgressSpinnerModule, 
     MatCardModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatRadioModule
   ],
   declarations: []
 })
