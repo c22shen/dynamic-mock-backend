@@ -12,6 +12,8 @@ import { MaterialModule } from './material/material.module';
 
 import { FormsModule } from '@angular/forms';
 
+import { FlexLayoutModule } from '@angular/flex-layout';
+
 @NgModule({
   declarations: [
     AppComponent
@@ -21,7 +23,8 @@ import { FormsModule } from '@angular/forms';
     HttpClientModule,
     BrowserAnimationsModule,
     MaterialModule,
-    FormsModule
+    FormsModule,
+    FlexLayoutModule
   ],
   providers: [DataService],
   bootstrap: [AppComponent]

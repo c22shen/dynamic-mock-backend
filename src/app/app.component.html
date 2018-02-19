@@ -1,26 +1,23 @@
-<mat-toolbar color="primary">
-  <mat-toolbar-row>
-    <span>MyMaterial</span>
+<div fxLayout="column" fxFlex>
 
-    <span class="example-spacer"></span>
-    
-    <button mat-button>About</button>
-    <button mat-button>Services</button>
-    <button mat-button>Contact</button>
-  </mat-toolbar-row>
-</mat-toolbar>
-
-<mat-card>
-  <mat-form-field>
-    <input matInput [(ngModel)]="answer">
-  </mat-form-field>
-
-  <br>
+    <mat-toolbar color="primary">
+      <mat-toolbar-row>
+        <span>Angular Material</span>
+      </mat-toolbar-row>
+    </mat-toolbar>
   
-  <button mat-raised-button>Answer me</button>
-</mat-card>
-
-
-<mat-card>
-  <h1> you're damn right.</h1>
-</mat-card>
+    <mat-sidenav-container fxFlex>
+      <mat-sidenav mode="side" opened>
+        Welcome
+      </mat-sidenav>
+      <div class="content" fxLayout="column" fxLayoutGap="20px">
+          <mat-card>
+              Test card 1
+            </mat-card>
+          
+            <mat-card>
+              Test card 2
+            </mat-card>
+      </div>
+    </mat-sidenav-container>
+  </div>
