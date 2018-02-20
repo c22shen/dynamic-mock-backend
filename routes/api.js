@@ -20,7 +20,7 @@ let response = {
 };
 
 // GET login
-router.get('/login', (req, res) => {
+router.post('/login', (req, res) => {
     let state;
     let apiName = 'login';
     db.collection('state').get()

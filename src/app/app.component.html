@@ -2,13 +2,12 @@
 
     <mat-toolbar color="primary">
       <mat-toolbar-row>
-        <span>Angular Material</span>
+        <span>Dynamic Mock Backend</span>
       </mat-toolbar-row>
     </mat-toolbar>
   
     <mat-sidenav-container fxFlex>
       <mat-sidenav mode="side" opened>
-        Welcome
       </mat-sidenav>
       <div class="content" fxLayout="column" fxLayoutGap="20px">          
             <mat-card *ngFor="let activateState of states | async">
