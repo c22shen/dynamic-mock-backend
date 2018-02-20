@@ -56,17 +56,13 @@ __webpack_require__("./node_modules/rxjs/_esm5/add/operator/map.js");
 // }
 var AppComponent = /** @class */ (function () {
     function AppComponent(dataService, afs) {
-        var _this = this;
         this.dataService = dataService;
         this.afs = afs;
         // Access the Data Service's getUsers() method we defined
-        this.dataService.getUsers()
-            .subscribe(function (res) { return _this.users = res; });
+        // this.dataService.getUsers()
+        //     .subscribe(res => this.users = res);
     }
     AppComponent.prototype.onStateChange = function (api, condition) {
-        // this.selectedOption = this.options.filter((item)=> item.id == optionid)[0];
-        console.log(api);
-        console.log(condition);
         this.afs.doc('state/' + api).set({ 'state': condition });
     };
     AppComponent.prototype.ngOnInit = function () {
