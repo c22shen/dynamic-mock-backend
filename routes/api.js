@@ -3,13 +3,16 @@ const router = express.Router();
 const admin = require('firebase-admin');
 const ServiceAccount = require('./ServiceAccountKey.json');
 const collectionName = "apiCollection";
+const responsesCollectionName = "responses";
+
+
 
 admin.initializeApp({
     credential: admin.credential.cert(ServiceAccount)
 });
 
 var db = admin.firestore();
-
+var masterFsCollection = db.collection(collectionName);
 // Error handling
 const sendError = (err, res) => {
     response.status = 501;
@@ -17,16 +20,7 @@ const sendError = (err, res) => {
     res.status(501).json(response);
 };
 
-let response = {
-};
-
-
-
-
 router.get('/importData', (req, res) => {
-    // var apiName = "login";
-    
-
 
     var loginApiData = {
         "url": "/api/auth/login",
@@ -35,7 +29,6 @@ router.get('/importData', (req, res) => {
         "apiName": "login"
       };
 
-      
       var loginApiResponses = [
            {
             "description": "success",
@@ -8393,7 +8386,6 @@ router.get('/importData', (req, res) => {
             
             
 
-
         for (let index = 0; index < apiDataArray.length; index++) {
             
             // var apiData = apiDataArray[index];
@@ -8401,10 +8393,10 @@ router.get('/importData', (req, res) => {
             // console.log("apiresponses is", apiresponses);
             // console.log("how many entrys?", apiresponses.length);
 
-            var apiDoc = db.collection(collectionName).add(apiDataArray[index]).then(ref=>{
+            var apiDoc = masterFsCollection.add(apiDataArray[index]).then(ref=>{
                 console.log("Added document with ID: '", ref.id);
       
-                var thisApiResponsesSubCollection = db.collection(collectionName).doc(ref.id).collection('responses');
+                var thisApiResponsesSubCollection = masterFsCollection.doc(ref.id).collection('responses');
                 console.log("how many entrys?", apiApiResponsesArray[index].length);
                 apiApiResponsesArray[index].forEach(responseData => {
                   thisApiResponsesSubCollection.add(responseData).then(responseInsertResponse => {
@@ -8415,162 +8407,55 @@ router.get('/importData', (req, res) => {
             })
             
         }
-        
-
-
       res.send('added!');
 })
 
 
+var getApiResponse = (response, apiId) =>  {
 
+    var apiInfo = masterFsCollection.doc(apiId);
 
+    var getDoc = apiInfo.get()
+    .then(apiDoc => {
+        var apiState = apiDoc.data().currentSelection;
 
-
-// GET login
-router.post('/login', (req, res) => {
-    let state;
-    let apiName = 'login';
-    db.collection('state').get()
-    .then((snapshot) => {
-        snapshot.forEach((stateDoc) => {
-            if (stateDoc.id === apiName) {
-                state = stateDoc.data().state;
-                // response.data = stateDoc.data();
-
-                //doc.id = 'login'
-                db.collection(stateDoc.id).get()
-                .then((snapshot) => {
-                    snapshot.forEach((responseDoc) => {
-                        if (responseDoc.id === state) {
-                            res.statusCode = responseDoc.data().httpcode;
-                            response = responseDoc.data().response;
-                            res.json(response);  
-                        }
-                    })
-                })
-                .catch((responseErr) => {
-                    console.log('Error getting api response', responseErr);
-                    sendError(responseErr, res);
-                });
-            }
-            
-        });
+        var apiResponseInfo = apiInfo
+        .collection(responsesCollectionName)
+        .where('description', '==', apiState).get()
+        .then(responseSnapshot => {
+            responseSnapshot.forEach(apiResponseDoc => {
+                var apiHttpCode = apiResponseDoc.data().httpcode;
+                var apiResponse = apiResponseDoc.data().response;
+                return response.status(apiHttpCode).json(apiResponse);
+            })
+        })
     })
-    .catch((stateErr) => {
-        console.log('Error getting current state', stateErr);
-        sendError(stateErr, res);
-    });
-});
+};
 
-// POST userChannels
-router.post('/userchannels', (req, res) => {
-    let state;
-    let apiName = 'userChannels';
-    db.collection('state').get()
-    .then((snapshot) => {
-        snapshot.forEach((stateDoc) => {
-            if (stateDoc.id === apiName) {
-                state = stateDoc.data().state;
-                // response.data = stateDoc.data();
-
-                //doc.id = 'login'
-                db.collection(stateDoc.id).get()
-                .then((snapshot) => {
-                    snapshot.forEach((responseDoc) => {
-                        if (responseDoc.id === state) {
-                            res.statusCode = responseDoc.data().httpcode;
-                            response = responseDoc.data().response;
-                            res.json(response);  
-                        }
-                    })
-                })
-                .catch((responseErr) => {
-                    console.log('Error getting api response', responseErr);
-                    sendError(responseErr, res);
-                });
-            }
+var allApis = masterFsCollection.get()
+    .then(snapshot => {
+        snapshot.forEach(apiDoc => {
+            console.log(apiDoc.id, '=>', apiDoc.data());
+            var apiId = apiDoc.id;
+            var apiUrl = apiDoc.data().url;
+            var apiMethod = apiDoc.data().method;
+            // var currentApiMode = apiDoc.data().currentSelection;
+            // var apiResponsesCollection = db.collection(collectionName + '/' + apiDoc.id + '/' + responsesCollectionName);
             
-        });
-    })
-    .catch((stateErr) => {
-        console.log('Error getting current state', stateErr);
-        sendError(stateErr, res);
-    });
-});
-
-// POST generateOTP
-router.post('/generateotp', (req, res) => {
-    let state;
-    let apiName = 'generateOTP';
-    db.collection('state').get()
-    .then((snapshot) => {
-        snapshot.forEach((stateDoc) => {
-            if (stateDoc.id === apiName) {
-                state = stateDoc.data().state;
-                // response.data = stateDoc.data();
-
-                //doc.id = 'login'
-                db.collection(stateDoc.id).get()
-                .then((snapshot) => {
-                    snapshot.forEach((responseDoc) => {
-                        if (responseDoc.id === state) {
-                            // response.status = responseDoc.data().httpcode;
-                            res.statusCode = responseDoc.data().httpcode;
-                            response = responseDoc.data().response;
-                            res.json(response);  
-                        }
+            switch(apiMethod) {
+                case 'get':
+                    router.get(apiUrl, function(req, res) {
+                        return getApiResponse(res, apiId);
                     })
-                })
-                .catch((responseErr) => {
-                    console.log('Error getting api response', responseErr);
-                    sendError(responseErr, res);
-                });
-            }
-            
-        });
-    })
-    .catch((stateErr) => {
-        console.log('Error getting current state', stateErr);
-        sendError(stateErr, res);
-    });
-});
-
-// POST generateOTP
-router.post('/validateotp', (req, res) => {
-    let state;
-    let apiName = 'validateOTP';
-    db.collection('state').get()
-    .then((snapshot) => {
-        snapshot.forEach((stateDoc) => {
-            if (stateDoc.id === apiName) {
-                state = stateDoc.data().state;
-                // response.data = stateDoc.data();
-
-                //doc.id = 'login'
-                db.collection(stateDoc.id).get()
-                .then((snapshot) => {
-                    snapshot.forEach((responseDoc) => {
-                        if (responseDoc.id === state) {
-                            // response.status = responseDoc.data().httpcode;
-                            res.statusCode = responseDoc.data().httpcode;
-                            response = responseDoc.data().response;
-                            res.json(response);  
-                        }
+                    break;
+                case 'post':
+                    router.post(apiUrl, function(req, res) {
+                        return getApiResponse(res, apiId);
                     })
-                })
-                .catch((responseErr) => {
-                    console.log('Error getting api response', responseErr);
-                    sendError(responseErr, res);
-                });
+                    break; 
             }
-            
-        });
+        })
     })
-    .catch((stateErr) => {
-        console.log('Error getting current state', stateErr);
-        sendError(stateErr, res);
-    });
-});
 
 module.exports = router;
 
