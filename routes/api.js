@@ -26,8 +26,6 @@ let response = {
 router.get('/importData', (req, res) => {
     // var apiName = "login";
     
-    var apiDataArray = [];
-    var apiApiResponsesArray = [];
 
 
     var loginApiData = {
@@ -40,7 +38,7 @@ router.get('/importData', (req, res) => {
       
       var loginApiResponses = [
            {
-            "description": "Success",
+            "description": "success",
             "httpcode": 200,
             "response": {
                 "channel_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjaWFtX3VzZXJuYW1lIjoiMDAwMDAwOTg0MTQzNCIsInN1YiI6IjcxY2M4NzM4LTA1YzQtNDFhNS04NGZkLTExMmRhNjVmMTAwYyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJsb2NrX3N0YXR1cyI6Ik4iLCJpYW1fcm9sZSI6IkNVU1RPTUVSIiwiaXNzIjoiaHR0cHM6Ly9MQ0xfQVBJR1dfRE9NQUlOLyIsImdpdmVuX25hbWUiOiIwMDAwMDA5ODQxNDM0Iiwibm9uY2UiOiI0ODEyMzMxNiIsImF1ZCI6ImNsaWVudF9pZD8iLCJleHAiOjE1MTk4Njc2MTYsImlhdCI6MTUxOTg2MDQxNiwiZmFtaWx5X25hbWUiOiJDVVNUT01FUiIsImVtYWlsIjoiMDAwMDAwOTg0MTQzNEBnbWFpbC5jb20iLCJqdGkiOiIyODg0MWNlMy1kYzAwLTQ3YmYtYmQ1ZC1jMjUwODQwYWVjNGIifQ.8dymAZfwEmui9Khd55_usb98usMzLqLIWQ5Am7ePXVQ",
@@ -67,11 +65,10 @@ router.get('/importData', (req, res) => {
                     "error_description": "ERROR_RESUBMIT_OK",
                     "requestId": "3a98305b-d318-479f-a6a0-f295fa36a23a"
                 }
-            },
-        ]
+            }
+        ];
 
-        apiDataArray.push(loginApiData);
-        apiApiResponsesArray.push(loginApiResponses);
+
         /*****************************************************Login Data *****************************************************/
 
 
@@ -86,7 +83,7 @@ router.get('/importData', (req, res) => {
 
           var userChannelsApiResponses = [
                {
-                "description": "Success",
+                "description": "success",
                 "httpcode": 200,
                 "response": {
                     "primaryPhone": "******1646",
@@ -201,8 +198,7 @@ router.get('/importData', (req, res) => {
                 }
             ]
 
-            apiDataArray.push(userChannelsApiData);
-            apiApiResponsesArray.push(userChannelsApiResponses);
+
 
                 /*****************************************************userChannels *****************************************************/
 
@@ -220,7 +216,7 @@ router.get('/importData', (req, res) => {
 
                   var genOtpApiResponses = [
                        {
-                        "description": "Success",
+                        "description": "success",
                         "httpcode": 200,
                         "response": null
                         },
@@ -329,9 +325,8 @@ router.get('/importData', (req, res) => {
                                 "formErrors": null
                             }
                         }
-                    ]
-                    apiDataArray.push(genOtpApiData);
-                    apiApiResponsesArray.push(genOtpApiResponses);
+                    ];
+
                 /***************************************************** gen OTP *****************************************************/
 
             
@@ -346,7 +341,7 @@ router.get('/importData', (req, res) => {
                   
                   var validateOtpApiResponses = [
                        {
-                        "description": "Success",
+                        "description": "success",
                         "httpcode": 204
                         },
                     
@@ -378,8 +373,7 @@ router.get('/importData', (req, res) => {
                         }
                     ]
 
-                    apiDataArray.push(validateOtpApiData);
-                    apiApiResponsesArray.push(validateOtpApiResponses);
+
 
                 /***************************************************** Validate OTP *****************************************************/
 
@@ -393,7 +387,7 @@ router.get('/importData', (req, res) => {
             
                   var postloginApiResponses = [
                        {
-                        "description": "Success",
+                        "description": "success",
                         "httpcode": 200,
                         "response": {  
                             "customer":{  
@@ -8322,13 +8316,12 @@ router.get('/importData', (req, res) => {
                         },
                     
                         {
-                            "description": "Failure",
+                            "description": "failure",
                             "httpcode": 400
                         }
                     ]
 
-                    apiDataArray.push(postloginApiData);
-                    apiApiResponsesArray.push(postloginApiResponses);
+
                 /***************************************************** post login *****************************************************/
 
                 var profileApiData = {
@@ -8340,7 +8333,7 @@ router.get('/importData', (req, res) => {
             
                   var profileApiResponses = [
                        {
-                        "description": "Success",
+                        "description": "success",
                         "httpcode": 200,
                         "response": {
                             "customerId":"2f46a404-d75d-4e09-bcca-9ce3548e9b8d",
@@ -8391,25 +8384,29 @@ router.get('/importData', (req, res) => {
                     ]
 
 
-                    apiDataArray.push(profileApiData);
-                    apiApiResponsesArray.push(profileApiResponses);
+
                 /***************************************************** customer profile *****************************************************/
 
 
-        
+                var apiDataArray = [loginApiData, userChannelsApiData, genOtpApiData, validateOtpApiData, postloginApiData, profileApiData];
+                var apiApiResponsesArray = [loginApiResponses, userChannelsApiResponses,genOtpApiResponses, validateOtpApiResponses, postloginApiResponses, profileApiResponses];
+            
+            
 
 
-      
         for (let index = 0; index < apiDataArray.length; index++) {
-            var apiData = apiDataArray[index];
-            var apiresponses = apiApiResponsesArray[index];
+            
+            // var apiData = apiDataArray[index];
+            // var apiresponses = apiApiResponsesArray[index];
+            // console.log("apiresponses is", apiresponses);
+            // console.log("how many entrys?", apiresponses.length);
 
-
-            var apiDoc = db.collection(collectionName).add(apiData).then(ref=>{
+            var apiDoc = db.collection(collectionName).add(apiDataArray[index]).then(ref=>{
                 console.log("Added document with ID: '", ref.id);
       
                 var thisApiResponsesSubCollection = db.collection(collectionName).doc(ref.id).collection('responses');
-                apiresponses.forEach(responseData => {
+                console.log("how many entrys?", apiApiResponsesArray[index].length);
+                apiApiResponsesArray[index].forEach(responseData => {
                   thisApiResponsesSubCollection.add(responseData).then(responseInsertResponse => {
                       console.log("response added!");
                   })

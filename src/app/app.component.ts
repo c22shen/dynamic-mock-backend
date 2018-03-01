@@ -5,10 +5,12 @@ import { DataService } from './data.service';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/switchMap';
 
-interface State {
-  state: string;
+interface Api {
+  state: any;
 }
+
 
 // interface StateId extends State { 
 //   id: string; 
@@ -20,14 +22,12 @@ interface State {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  apiCollection$: Observable<any>;
+  apiCollection: AngularFirestoreCollection<Api>;
 
-  apiCol: AngularFirestoreCollection<State>;
-  statesCol: AngularFirestoreCollection<State>;
-  states: any;
-  favoriteSeason: string;
-
-  onStateChange(api, condition) {
-    this.afs.doc('state/'+api).set({'state': condition});
+  
+  onStateChange(apiDocId, currentSelection) {
+    this.afs.doc(`apiCollection/${apiDocId}`).update({'currentSelection': currentSelection});
   }
 
 
@@ -40,25 +40,37 @@ export class AppComponent {
 
   ngOnInit() {
 
-    this.statesCol = this.afs.collection('apiCollection');
-    // this.states = this.statesCol.valueChanges();
-    
-    this.states = this.statesCol.snapshotChanges()
-    .map(actions => {
-      return actions.map(a => {
-        const data = a.payload.doc.data() as State;
-        const id = a.payload.doc.id;
-        this.apiCol = this.afs.collection(id);
-        const apiStates = this.apiCol.snapshotChanges()
-        .map(actions => {
-          return actions.map(a => {
-            const state = a.payload.doc.id;
-            return { state };
-          })
-        })
-        return { id, data, apiStates };
+    this.apiCollection = this.afs.collection('apiCollection');
+
+   this.apiCollection$ = this.apiCollection.snapshotChanges()
+  
+    .map(apisInfo => {
+      return apisInfo.map(apiInfo => {
+        const apiGeneralData = apiInfo.payload.doc.data();
+        const apiDocId = apiInfo.payload.doc.id;
+        const apiResponsesData$ = this.afs.collection(`apiCollection/${apiDocId}/responses`).valueChanges();
+
+        return { apiDocId, apiGeneralData, apiResponsesData$ };
       });
     });
+
+    
+    // this.states = this.statesCol.snapshotChanges()
+    // .map(actions => {
+    //   return actions.map(a => {
+    //     const data = a.payload.doc.data() as State;
+    //     const id = a.payload.doc.id;
+    //     this.apiCol = this.afs.collection(id);
+    //     const apiStates = this.apiCol.snapshotChanges()
+    //     .map(actions => {
+    //       return actions.map(a => {
+    //         const state = a.payload.doc.id;
+    //         return { state };
+    //       })
+    //     })
+    //     return { id, data, apiStates };
+    //   });
+    // });
 
 
 

@@ -11,15 +11,6 @@
     padding: 5em;
   }
 
-  .example-radio-group {
-    display: inline-flex;
-    flex-direction: column;
-  }
-  
-  .example-radio-button {
-    margin: 5px;
-  }
-  
-  .example-selected-value {
-    margin: 15px 0;
+  mat-radio-button {
+    margin: auto 1.5em;
   }
