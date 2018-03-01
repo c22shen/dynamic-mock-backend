@@ -40,7 +40,7 @@ export class AppComponent {
 
   ngOnInit() {
 
-    this.statesCol = this.afs.collection('state');
+    this.statesCol = this.afs.collection('apiCollection');
     // this.states = this.statesCol.valueChanges();
     
     this.states = this.statesCol.snapshotChanges()
