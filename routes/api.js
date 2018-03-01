@@ -210,8 +210,7 @@ router.get('/importData', (req, res) => {
                   var genOtpApiResponses = [
                        {
                         "description": "success",
-                        "httpcode": 200,
-                        "response": null
+                        "httpcode": 200
                         },
                     
                         {
